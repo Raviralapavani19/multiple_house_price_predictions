@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}{{ city }} Real Estate Analysis{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4" style="color: var(--netflix-red);">{{ city }} Housing Analysis</h1>
+
+    <!-- Area Selection -->
+    <div class="analysis-filter-card">
+        <div class="card-body">
+            <form method="get">
+                <select name="area" class="analysis-select" onchange="this.form.submit()">
+                    {% for area in areas %}
+                        <option value="{{ area }}" {% if area == selected_area %}selected{% endif %}>
+                            {{ area|title }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <div class="analysis-row">
+        <!-- Price per Sqft -->
+        <div class="analysis-card">
+            <div class="card-header">🏘️ Price per Sqft</div>
+            <div class="card-body">
+                <img src="data:image/png;base64,{{ graphics.price_per_sqft }}" alt="Price per square foot">
+                <div class="graph-description">
+                    {{ descriptions.price_per_sqft }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Property Type Distribution -->
+        <div class="analysis-card">
+            <div class="card-header">🏡 Property Types</div>
+            <div class="card-body">
+                <img src="data:image/png;base64,{{ graphics.property_type }}" alt="Property types">
+                <div class="graph-description">
+                    {{ descriptions.property_type }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fullscreen Overlay -->
+    <div class="fullscreen-overlay">
+        <div class="fullscreen-image-container">
+            <span class="close-btn">&times;</span>
+            <img class="fullscreen-image" src="" alt="Fullscreen view">
+        </div>
+    </div>
+</div>
+
+<script>
+    // Fullscreen functionality
+    document.querySelectorAll('.analysis-card img').forEach(img => {
+        img.addEventListener('click', (e) => {
+            const overlay = document.querySelector('.fullscreen-overlay');
+            const fullscreenImg = overlay.querySelector('.fullscreen-image');
+            fullscreenImg.src = e.target.src;
+            overlay.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        });
+    });
+
+    // Close functionality
+    document.querySelector('.close-btn').addEventListener('click', closeFullscreen);
+    document.querySelector('.fullscreen-overlay').addEventListener('click', (e) => {
+        if (e.target === document.querySelector('.fullscreen-overlay')) {
+            closeFullscreen();
+        }
+    });
+
+    // ESC key close
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeFullscreen();
+    });
+
+    function closeFullscreen() {
+        document.querySelector('.fullscreen-overlay').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+</script>
+{% endblock %}

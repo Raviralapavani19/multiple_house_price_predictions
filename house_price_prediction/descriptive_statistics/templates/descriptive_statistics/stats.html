@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="stats-container">
+    <h1 class="stats-main-header">Real Estate Analysis - {{ city }}</h1>
+
+    <!-- Area Selection -->
+    <div class="stats-card stats-filter-card">
+        <div class="stats-card-body">
+            <form method="get">
+                <select name="area" class="stats-select" onchange="this.form.submit()">
+                    {% for area in areas %}
+                        <option value="{{ area }}" {% if area == selected_area %}selected{% endif %}>
+                            {{ area|title }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <!-- Price Statistics -->
+    <div class="stats-card">
+        <div class="stats-card-body">
+            <h3 class="stats-card-title">Price Statistics (₹)</h3>
+            <div class="stats-grid">
+                {% for key, value in price_stats.items %}
+                <div class="stats-grid-item">
+                    <div class="stats-data-box">
+                        <div class="stats-data-label">{{ key }}</div>
+                        <div class="stats-data-value">
+                            {% if key == 'Range' %}
+                                ₹{{ value|floatformat:0 }}
+                            {% else %}
+                                ₹{{ value|floatformat:2 }}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Categorical Statistics -->
+    <div class="stats-card">
+        <div class="stats-card-body">
+            <h3 class="stats-card-title">Category Analysis</h3>
+            <div class="stats-category-grid">
+                {% for cat, data in categorical_stats.items %}
+                <div class="stats-category-card">
+                    <div class="stats-category-content">
+                        <h5 class="stats-category-title">{{ cat|title }}</h5>
+
+                        <div class="stats-category-info">
+                            <span class="stats-info-label">Most Common:</span>
+                            <div class="stats-info-value">{{ data.mode }}</div>
+                        </div>
+
+                        <div class="stats-category-info">
+                            <span class="stats-info-label">Unique Values:</span>
+                            <div class="stats-info-value">{{ data.unique_count }}</div>
+                        </div>
+
+                        <div class="stats-top-values">
+                            <span class="stats-info-label">Top Values:</span>
+                            <ul class="stats-value-list">
+                                {% for value, count in data.top_values.items %}
+                                <li class="stats-list-item">
+                                    <span>{{ value }}</span>
+                                    <span>{{ count }}</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
